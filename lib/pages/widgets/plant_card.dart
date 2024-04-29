@@ -1,8 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:plant_recognition/pages/preview_screen.dart';
 
 class PlantCard extends StatefulWidget {
-  const PlantCard({super.key});
+  String imageUrl;
+  String title;
+  PlantCard({
+    required this.imageUrl,
+    required this.title,
+    super.key,
+  });
 
   @override
   State<PlantCard> createState() => _PlantCardState();
@@ -20,33 +28,43 @@ class _PlantCardState extends State<PlantCard> {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const PreviewScreen(
-                plantTitle: 'Urgamal',
-                imageUrl: 'image.png',
+              builder: (context) => PreviewScreen(
+                plantTitle: widget.title,
+                imageUrl: widget.imageUrl,
               ),
             ),
           );
         },
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Expanded(
+            SizedBox(
+              height: 200,
               child: ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(
+                    10.0,
+                  ),
+                ),
                 child: Image(
-                  image: AssetImage('assets/images/plant-1.webp'),
+                  image: AssetImage('assets/images/${widget.imageUrl}'),
                   fit: BoxFit.cover,
+                  height: 200,
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Plant Name',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    widget.title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),

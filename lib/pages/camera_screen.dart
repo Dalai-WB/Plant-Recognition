@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:plant_recognition/pages/take_picture_screen.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -12,30 +13,11 @@ class _CameraScreenState extends State<CameraScreen> {
   late List<CameraDescription> _cameras;
   late CameraController _controller;
   bool _isCameraInitialized = false;
-  
 
   @override
   void initState() {
     super.initState();
     initializeCamera();
-    _controller = CameraController(_cameras[0], ResolutionPreset.max);
-    _controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            // Handle access errors here.
-            break;
-          default:
-            // Handle other errors here.
-            break;
-        }
-      }
-    });
   }
 
   @override
@@ -46,18 +28,25 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
+    if (!_isCameraInitialized) {
       return Container();
     }
-    return MaterialApp(
-      home: CameraPreview(_controller),
+    return TakePictureScreen(
+      controller: _controller,
     );
   }
 
   initializeCamera() async {
     _cameras = await availableCameras();
-    print(await availableCameras());
-    // await onNewCameraSelected(_cameras.first);
+    _controller = CameraController(_cameras[0], ResolutionPreset.max);
+    try {
+      await _controller.initialize();
+      setState(() {
+        _isCameraInitialized = true;
+      });
+    } catch (e) {
+      debugPrint('Error initializing camera: $e');
+    }
   }
 
   Future<void> onNewCameraSelected(CameraDescription description) async {

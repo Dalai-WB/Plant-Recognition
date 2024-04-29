@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -6,9 +8,14 @@ import 'package:plant_recognition/pages/widgets/photo_view_screen.dart';
 class ImagePreview extends StatefulWidget {
   final int size;
   final List<String> urls;
+  bool isPath;
 
-  const ImagePreview({Key? key, required this.size, required this.urls})
-      : super(key: key);
+  ImagePreview({
+    Key? key,
+    required this.size,
+    required this.urls,
+    this.isPath = false,
+  }) : super(key: key);
 
   @override
   State<ImagePreview> createState() => _ImagePreviewState();
@@ -49,17 +56,27 @@ class _ImagePreviewState extends State<ImagePreview> {
                   crossAxisCellCount: matrix[index]['cross'] ?? 4,
                   mainAxisCellCount: matrix[index]['main'] ?? 4,
                   child: InkWell(
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => PhotoViewScreen(
                           index: index,
-                          url: widget.urls[index],
+                          urls: widget.urls,
                           count: widget.size,
+                          isPath: widget.isPath,
                         ),
                       ),
                     ),
-                    child: Image(image: AssetImage('assets/images/${widget.urls[index]}')),
+                    child: widget.isPath
+                        ? Image.file(
+                            File(widget.urls[index]),
+                          )
+                        : Image(
+                            image: AssetImage(
+                              'assets/images/${widget.urls[index]}',
+                            ),
+                          ),
                   ),
                 );
               },

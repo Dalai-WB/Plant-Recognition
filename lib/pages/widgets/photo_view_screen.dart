@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dismissible_page/dismissible_page.dart';
@@ -6,14 +9,18 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 class PhotoViewScreen extends StatefulWidget {
   final int index;
-  final String url;
+  final List<String> urls;
   final int count;
+  bool isPath;
+  bool isNetwork;
 
-  const PhotoViewScreen({
+  PhotoViewScreen({
     Key? key,
     required this.index,
-    required this.url,
+    required this.urls,
     required this.count,
+    this.isPath = false,
+    this.isNetwork = false,
   }) : super(key: key);
 
   @override
@@ -72,9 +79,40 @@ class _PhotoViewScreenState extends State<PhotoViewScreen> {
             onTap: () => setState(() {
               showNavs = !showNavs;
             }),
-            child: Image(
-              image: AssetImage('assets/images/${widget.url}'),
-            ),
+            child: widget.isPath
+                ? widget.isNetwork
+                    ? ExtendedImage.network(
+                        widget.urls[index],
+                        clearMemoryCacheWhenDispose: true,
+                        fit: BoxFit.cover,
+                        enableMemoryCache: false,
+                        enableLoadState: false,
+                        compressionRatio: 0.8,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(8),
+                        height: 190,
+                        width: 190,
+                        loadStateChanged: (ExtendedImageState state) {
+                          switch (state.extendedImageLoadState) {
+                            case LoadState.loading:
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            case LoadState.completed:
+                              return state.completedWidget;
+                            default:
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                          }
+                        },
+                      )
+                    : Image.file(File(widget.urls[index]))
+                : Image(
+                    image: AssetImage(
+                      'assets/images/${widget.urls[index]}',
+                    ),
+                  ),
           ),
           initialScale: PhotoViewComputedScale.contained * 1,
         );

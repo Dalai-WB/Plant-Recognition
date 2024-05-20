@@ -1,7 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plant_recognition/pages/preview_screen.dart';
@@ -57,14 +55,12 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   loadModel() async {
     String? res = await Tflite.loadModel(
-        model: "assets/converted_model.tflite",
-        labels: "assets/labels.txt",
-        numThreads: 1, // defaults to 1
-        isAsset:
-            true, // defaults to true, set to false to load resources outside assets
-        useGpuDelegate:
-            false // defaults to false, set to true to use GPU delegate
-        );
+      model: "assets/converted_model.tflite",
+      labels: "assets/labels.txt",
+      numThreads: 1,
+      isAsset: true,
+      useGpuDelegate: false,
+    );
   }
 
   Future<String> classifyImage(XFile image) async {
@@ -72,8 +68,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       path: image.path,
       numResults: 1,
       threshold: 0.05,
-      imageMean: 127.5,
-      imageStd: 127.5,
+      imageMean: 224,
+      imageStd: 224,
     );
     return recognitions?.first['label'];
   }

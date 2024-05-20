@@ -57,6 +57,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   getData() {
     databaseHelper.getData(widget.plantTitle).then((value) {
+      print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: $value');
       if (!isOffline) {
         otherImages.clear();
         for (var i = 0; i < 3; i++) {
@@ -74,18 +75,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
-      //     onPressed: () => Navigator.pushAndRemoveUntil(
-      //         context,
-      //         MaterialPageRoute(builder: (context) => const HomeScreen()),
-      //         (route) => false),
-      //   ),
-      //   title: const Text(
-      //     'Үр дүн',
-      //   ),
-      // ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(

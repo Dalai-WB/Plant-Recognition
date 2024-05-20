@@ -48,6 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isOffline = false;
   String? searchString = '';
 
+  Future<void> updateSuggestions(String query) async {
+    var data = await db.getDatas(query);
+    setState(() {
+      suggestData = data;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -131,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(left: 0),
+          padding: const EdgeInsets.only(left: 0),
           child: Row(
             children: [
               const Icon(
@@ -165,11 +172,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ) {
                 return TextFormField(
                   onTap: () => controller.openView(),
-                  onChanged: (data) {
-                    setState(() {
-                      searchString = data;
-                    });
-                  },
                   autofocus: false,
                   decoration: InputDecoration(
                     hintText: 'Ургамлын нэрээ оруулна уу',
@@ -196,27 +198,23 @@ class _HomeScreenState extends State<HomeScreen> {
               suggestionsBuilder: (
                 BuildContext context,
                 SearchController controller,
-              ) async {
-                var data = await db.getDatas('%$searchString%' ?? '', 5);
-                print(data);
-                setState(() {
-                  suggestData = data;
-                });
+              ) {
+                updateSuggestions(controller.value.text);
                 return suggestData.map<ListTile>((element) {
                   return ListTile(
                     title: Text(element['scientificName'] ?? ''),
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => PreviewScreen(
-                      //       plantTitle: element['scientificName'],
-                      //       imageUrl: 'plant-1.jpg',
-                      //     ),
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PreviewScreen(
+                            plantTitle: element['scientificName'],
+                            imageUrl: 'template.jpg',
+                          ),
+                        ),
+                      );
                     },
                   );
-                });
+                }).toList();
               },
             ),
             const SizedBox(height: 32),
